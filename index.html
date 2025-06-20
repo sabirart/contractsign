@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google-signin-client_id" content="YOUR_CLIENT_ID.apps.googleusercontent.com">
+    <title>Google Sign-In</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}
+        body{min-height:100vh;background:#f8fafc;display:flex;justify-content:center;align-items:center;overflow:hidden}
+        .popup{background:#fff;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.15);text-align:center;transition:.2s ease;z-index:1000}
+        .signup-popup{position:fixed;bottom:30px;right:30px;width:60px;height:60px;display:flex;justify-content:center;align-items:center;cursor:pointer;transform:scale(0);opacity:0;animation:fadeIn .5s forwards .5s}
+        .signup-popup:hover{transform:scale(1.1);box-shadow:0 12px 32px rgba(0,0,0,.2)}
+        .signin-page{width:320px;padding:30px;position:relative}
+        @keyframes fadeIn{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+        @keyframes fadeOut{from{transform:scale(1);opacity:1}to{transform:scale(0);opacity:0}}
+        .google-icon{width:32px;height:32px}
+        h2{color:#1a202c;font-size:18px;font-weight:600;margin-bottom:12px}
+        p{color:#4a5568;font-size:14px;margin-bottom:20px}
+        .custom-g-signin{width:100%;padding:12px;background:#3182ce;color:#fff;border:none;border-radius:6px;font-size:14px;font-weight:500;cursor:pointer;transition:background 1.5s}
+        .custom-g-signin:hover{background:#2b6cb0}
+        .close-btn{position:absolute;top:10px;right:10px;width:24px;height:24px;background:#edf2f7;border:none;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#4a5568;font-size:14px;transition:background 1.5s}
+        .close-btn:hover{background:#e2e8f0}
+        .footer{margin-top:15px;font-size:11px;color:#718096}
+        .footer a{color:#3182ce;text-decoration:none}
+        .footer a:hover{color:#2b6cb0}
+        .hidden{display:none}
+    </style>
+</head>
+<body>
+    <div id="signupPopup" class="popup signup-popup" onclick="showSignIn()">
+        <img src="https://www.google.com/favicon.ico" alt="Google Icon" class="google-icon">
+    </div>
+    <div id="signinPage" class="popup signin-page hidden">
+        <button class="close-btn" onclick="closeSignIn()">✕</button>
+        <h2>Sign In with Google</h2>
+        <p>Connect using your Google account.</p>
+        <button class="custom-g-signin" onclick="triggerGoogleSignIn()">Sign In with Google</button>
+        <div class="footer">
+            <p>By signing in, you agree to our <a href="#">Terms</a> and <a href="#">Privacy Policy</a>.</p>
+        </div>
+    </div>
+    <script src="https://apis.google.com/js/platform.js?onload=initGoogleSignIn" async defer></script>
+    <script>
+        let auth2;
+        function initGoogleSignIn(){gapi.load('auth2',()=>{auth2=gapi.auth2.init({client_id:'YOUR_CLIENT_ID.apps.googleusercontent.com'});auth2.then(()=>{auth2.isSignedIn.get()?onSignIn(auth2.currentUser.get()):document.getElementById('signupPopup').style.display='flex'})})}
+        function showSignIn(){const a=document.getElementById('signupPopup'),b=document.getElementById('signinPage');a.style.animation='fadeOut .4s forwards';setTimeout(()=>{a.classList.add('hidden');b.classList.remove('hidden');b.style.animation='fadeIn .4s forwards'},400)}
+        function closeSignIn(){const a=document.getElementById('signupPopup'),b=document.getElementById('signinPage');b.style.animation='fadeOut .4s forwards';setTimeout(()=>{b.classList.add('hidden');a.classList.remove('hidden');a.style.display='flex';a.style.animation='fadeIn .4s forwards'},400)}
+        function triggerGoogleSignIn(){auth2.signIn().then(a=>onSignIn(a))}
+        function onSignIn(a){const b=a.getBasicProfile(),c=a.getAuthResponse().id_token;console.log('ID: '+b.getId(),'Name: '+b.getName(),'Email: '+b.getEmail());alert('Google Sign-In successful! (Demo)')}
+    </script>
+</body>
+</html>
