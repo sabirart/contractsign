@@ -3,365 +3,2557 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="google-signin-client_id" content="834487051944-vlirmtab6qpa92572rkfs5hvmjcicjt4.apps.googleusercontent.com" />
-  <title>Google Sign-In</title>
+  <title>Topbar with Profile</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@500&display=swap" rel="stylesheet">
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Google Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    }
-
-    body {
-      min-height: 100vh;
-      background: #f8fafc;
-      overflow: hidden;
-    }
-
-    .main-page {
-      background: #fff;
-      width: 100%;
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .main-page h1 {
-      color: #1a202c;
-      font-size: 48px;
-      font-weight: 600;
-      text-align: center;
-    }
-
-     .signup-popup {
-      position: fixed;
-      top: 22px;
-      right: 28px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 12px 24px; /* Increased padding for better touch target */
-      gap: 12px; /* Slightly more breathing room */
-      background: #ffffff;
-      border-radius: 32px; /* More pill-shaped */
-      box-shadow: 0 2px 16px rgba(0, 0, 0, 0.05), 0 4px 16px rgba(0, 0, 0, 0.03);
-      cursor: default;
-      opacity: 0;
-      transform: scale(0.95) translateY(16px);
-      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.3s ease;
-      border: 1px solid rgba(0, 0, 0, 0.08); /* More modern subtle border */
-      animation: fadeIn 400ms cubic-bezier(0.4, 0, 0.2, 1) forwards 0.3s;
-      z-index: 100;
-      user-select: none;
-      -webkit-user-select: none;
-      -ms-user-select: none;
-      height: 48px; /* Increased height for better presence */
-      box-sizing: border-box;
-    }
-
-    .google-icon {
-    width: 20px;
-    height: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .google-text {
-    font-size: 14.5px;
-    font-weight: 500;
-    color: #3c4043;
-    letter-spacing: 0.3px;
-    line-height: 1;
-  }
-
-    /* Hover states for better interactivity */
-    .signup-popup:hover {
-      transform: translateY(-1px) scale(0.98);
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12), 0 6px 20px rgba(0, 0, 0, 0.08);
-    }
-
-    .signup-popup:hover {
-  transform: translateY(-1px);
-  box-shadow: 
-    0 2px 6px rgba(0, 0, 0, 0.04),
-    0 4px 12px rgba(0, 0, 0, 0.05),
-    0 8px 24px rgba(0, 0, 0, 0.06);
-  border-color: #d7d9dd;
+    :root {
+  /* Light Theme Colors */
+  --background-primary: #f9fafa;
+  --background-secondary: #ffffff;
+  --text-primary: #3c4043;
+  --text-secondary: #5f6368;
+  --text-tertiary: #70757a;
+  --border-primary: rgba(0, 0, 0, 0.08);
+  --border-secondary: #dadce0;
+  --border-hover: #d7d9dd;
+  --shadow-subtle: rgba(0, 0, 0, 0.05);
+  --shadow-medium: rgba(0, 0, 0, 0.06);
+  --shadow-elevated: rgba(0, 0, 0, 0.12);
+  --accent-primary: #1a73e8;
+  --accent-hover: #1557b0;
+  --button-hover: #eeeeee;
+  --button-active: #f1f3f4;
+  --icon-filter: invert(25%) sepia(10%) saturate(100%) hue-rotate(180deg) brightness(90%) contrast(90%);
+  --icon-hover-filter: invert(20%) sepia(10%) saturate(120%) hue-rotate(180deg) brightness(85%) contrast(95%);
 }
 
-.signup-popup:active {
+body.dark {
+  /* Dark Theme Colors */
+  --background-primary: #1a1a1a;
+  --background-secondary: #2d2d2d;
+  --text-primary: #d0d0d0;
+  --text-secondary: #b0b0b0;
+  --text-tertiary: #a0a0a0;
+  --border-primary: #444;
+  --border-secondary: #444;
+  --border-hover: #555;
+  --shadow-subtle: rgba(0, 0, 0, 0.15);
+  --shadow-medium: rgba(0, 0, 0, 0.2);
+  --shadow-elevated: rgba(0, 0, 0, 0.25);
+  --accent-primary: #4285f4;
+  --accent-hover: #669df6;
+  --button-hover: #383838;
+  --button-active: #404040;
+  --icon-filter: invert(80%) sepia(5%) saturate(100%) hue-rotate(180deg) brightness(100%) contrast(90%);
+  --icon-hover-filter: invert(90%) sepia(5%) saturate(120%) hue-rotate(180deg) brightness(115%) contrast(100%);
+}
+
+   * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Google Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+body {
+  min-height: 100vh;
+  background: var(--background-primary);
+}
+
+body.dark {
+  background: var(--background-primary);
+}
+
+/*=======================
+  Shared Topbar Styles
+========================*/
+.topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4rem;
+  background: var(--background-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1rem;
+  box-shadow: 0 0.2rem 0.3rem var(--shadow-medium);
+  z-index: 1000;
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+
+body.dark .topbar {
+  background: var(--background-secondary);
+  box-shadow: 0 0.1rem 0.2rem var(--shadow-medium);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  user-select: none;
+}
+
+.logo span {
+  font-family: 'Roboto Slab', serif;
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  letter-spacing: 0.05rem;
+  transition: color 0.3s ease;
+  line-height: 1;
+  padding: 0.25rem 0;
+  white-space: nowrap;
+}
+
+body.dark .logo span {
+  color: var(--text-primary);
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/*=======================
+  Notification Toggle
+========================*/
+.notification-toggle {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background-color: transparent;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
+              box-shadow 0.3s ease,
+              background 0.3s ease,
+              border-color 0.3s ease;
+  cursor: pointer;
+  user-select: none;
+}
+
+.notification-toggle:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+body.dark .notification-toggle:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.06);
+}
+
+.notification-icon {
+  width: 1rem;
+  height: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.notification-icon img {
+  width: 100%;
+  height: 100%;
+  filter: var(--icon-filter);
+  transition: filter 0.3s ease;
+}
+
+.notification-toggle:hover .notification-icon img {
+  filter: var(--icon-hover-filter);
+}
+
+/* Dark mode override */
+body.dark .notification-icon img {
+  filter: var(--icon-filter);
+}
+body.dark .notification-toggle:hover .notification-icon img {
+  filter: var(--icon-hover-filter);
+}
+
+/* Notification badge (optional) */
+.notification-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background-color: #ff3b30;
+  color: #fff;
+  font-size: 0.625rem;
+  font-weight: 600;
+  border-radius: 50%;
+  padding: 2px 5px;
+  min-width: 1rem;
+  height: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  box-shadow: 0 0 0 2px #fff;
+}
+
+/*=======================
+  Notification Panel (matches profile-page style)
+========================*/
+.notification-panel {
+  user-select: none;
+  position: fixed;
+  top: 3.5rem;
+
+  right: min(6rem, calc((100vw - 18rem) / 2)); /* ✅ keeps 6rem on big screen, centers on small screens only */
+
+  width: min(90%, 18rem);
+  max-height: 80vh;
+
+  background: var(--background-secondary);
+  padding: 1rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 0.8rem 2.4rem var(--shadow-elevated);
+  opacity: 0;
+  transform: scale(0.96) translateY(0.4rem);
+  z-index: 1200;
+  border: 1px solid var(--border-secondary);
+  overflow-y: auto;
+  display: none;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  transition:
+    background 0.3s ease,
+    border-color 0.3s ease,
+    opacity 0.3s ease,
+    transform 0.3s ease;
+
+  scrollbar-width: thin;
+  scrollbar-color: var(--text-tertiary) var(--background-secondary);
+}
+
+
+.notification-panel::-webkit-scrollbar {
+  width: 6px;
+}
+
+.notification-panel::-webkit-scrollbar-track {
+  background: var(--background-secondary);
+}
+
+.notification-panel::-webkit-scrollbar-thumb {
+  background: var(--text-tertiary);
+  border-radius: 3px;
+}
+
+.notification-panel::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary);
+}
+
+.notification-panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 0.25rem;
+  background: var(--text-primary);
+}
+
+body.dark .notification-panel {
+  background: var(--background-secondary);
+  border-color: var(--border-secondary);
+}
+
+/* Show/Hide Animation */
+.notification-panel.show {
+  display: flex;
+  animation: modalFadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  opacity: 1;
+  transform: scale(1) translateY(0);
+}
+
+.notification-panel.hide {
+  animation: modalFadeOut 0.3s forwards;
+}
+
+/*=======================
+  Notification Item (matches profile-option style)
+========================*/
+.notification-option {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border-primary);
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.notification-option:last-child {
+  border-bottom: none;
+}
+
+.notification-option:hover {
+  color: var(--text-secondary);
+}
+
+.notification-option img {
+  width: 1rem;
+  height: 1rem;
+  filter: var(--icon-filter);
+  flex-shrink: 0;
+  transition: filter 0.3s ease;
+}
+
+.notification-option:hover img {
+  filter: var(--icon-hover-filter);
+}
+
+/* Clear All Notification (different style but still flat) */
+.notification-option.clear {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.5rem;
+  padding: 0.75rem 0 0.25rem;
+  margin-top: 0.75rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  border-top: 1px solid var(--border-secondary);
+  cursor: pointer;
+  transition:
+    color 0.25s ease,
+    opacity 0.25s ease,
+    transform 0.2s ease;
+  opacity: 0.85;
+  letter-spacing: 0.02em;
+  user-select: none;
+}
+
+.notification-option.clear:hover {
+  color: #d93025; /* Google Red */
+  opacity: 1;
+  transform: translateX(2px);
+}
+
+.notification-option.clear:active {
+  color: #b31412;
+  transform: scale(0.99) translateX(1px);
+  opacity: 0.95;
+}
+
+.notification-option.clear img {
+  width: 0.875rem;
+  height: 0.875rem;
+  filter: var(--icon-filter);
+  opacity: 0.8;
+  transition: filter 0.3s ease, opacity 0.3s ease;
+}
+
+.notification-option.clear:hover img {
+  filter: var(--icon-hover-filter);
+  opacity: 1;
+}
+
+/* Heading inside panel */
+.notification-heading {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+/*=======================
+  Profile Button (replaces signup-popup)
+========================*/
+.profile-popup {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: var(--background-secondary);
+  cursor: default;
+  padding: 0.5rem 1rem;
+  border-radius: 1.5rem;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
+              box-shadow 0.3s ease,
+              background 0.3s ease,
+              border-color 0.3s ease;
+  border: 1px solid var(--border-primary);
+  height: 2.5rem;
+  box-sizing: border-box;
+  user-select: none;
+  box-shadow: 0 0.1rem 0.8rem var(--shadow-subtle), 0 0.2rem 0.8rem var(--shadow-subtle);
+  z-index: 100;
+}
+
+body.dark .profile-popup {
+  background: var(--background-secondary);
+  border-color: var(--border-secondary);
+}
+
+.profile-popup:hover {
+  transform: translateY(-0.05rem);
+  box-shadow:
+    0 0.1rem 0.3rem var(--shadow-subtle),
+    0 0.2rem 0.6rem var(--shadow-subtle),
+    0 0.4rem 1.2rem var(--shadow-medium);
+  border-color: var(--border-hover);
+}
+
+body.dark .profile-popup:hover {
+  box-shadow:
+    0 0.1rem 0.3rem var(--shadow-medium),
+    0 0.2rem 0.6rem var(--shadow-subtle);
+  border-color: var(--border-hover);
+}
+
+.profile-popup:active {
   transform: translateY(0);
-  box-shadow: 
-    0 1px 3px rgba(0, 0, 0, 0.04),
-    0 2px 6px rgba(0, 0, 0, 0.06);
-  background: #f9fafa;
+  background: var(--background-primary);
+  box-shadow:
+    0 0.05rem 0.15rem var(--shadow-subtle),
+    0 0.1rem 0.3rem var(--shadow-medium);
 }
 
-    .signup-popup:active {
-      transform: translateY(1px) scale(0.98);
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    }
+body.dark .profile-popup:active {
+  background: var(--button-active);
+  box-shadow:
+    0 0.05rem 0.15rem var(--shadow-medium),
+    0 0.1rem 0.3rem var(--shadow-medium);
+}
 
-    /* Signin modal */
-    .signin-page {
-      position: fixed;
-      top: 80px;
-      right: 30px;
-      width: 340px;
-      background: #ffffff;
-      padding: 24px;
-      border-radius: 16px;
-      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.12);
-      opacity: 0;
-      transform: scale(0.96) translateY(8px);
-      z-index: 1200;
-      display: none;
-      border: 1px solid #dddcdc;
-      overflow: hidden;
-    }
+.profile-icon {
+  width: 1rem;
+  height: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
-    .signin-page.show {
-      display: block;
-      animation: modalFadeIn 300ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
-    }
+.profile-icon img {
+  width: 100%;
+  height: 100%;
+  filter: var(--icon-filter);
+  transition: filter 0.3s ease;
+}
 
-    .signin-page.hide {
-      animation: modalFadeOut 300ms forwards;
-    }
+body.dark .profile-icon img {
+  filter: var(--icon-filter);
+}
 
-    .signin-page::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 6px;
-      background: linear-gradient(90deg, #4285F4, #34A853, #FBBC05, #EA4335);
-    }
+.profile-text {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  letter-spacing: 0.015625rem;
+  line-height: 1;
+  transition: color 0.3s ease;
+}
 
-    h2 {
-      color: #202124;
-      font-size: 20px;
-      font-weight: 500;
-      margin: 16px 0 8px;
-      letter-spacing: 0.15px;
-    }
+body.dark .profile-text {
+  color: var(--text-primary);
+}
 
-    p {
-      color: #5f6368;
-      font-size: 14px;
-      line-height: 1.5;
-      margin-bottom: 24px;
-      letter-spacing: 0.2px;
-    }
+body.profile-page-open {
+  overflow: hidden;
+  display: none;
+}
 
-    .custom-g-signin {
-      width: 100%;
-      padding: 12px;
-      background: #ffffff;
-      color: #3c4043;
-      border: 1px solid #dadce0;
-      border-radius: 4px;
-      font-size: 14px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: background 0.2s, border-color 0.2s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      letter-spacing: 0.25px;
-    }
+/* Profile page styles */
+.profile-page {
+  user-select: none;
+  position: fixed;
+  top: 3.5rem;
+  right: 1.25rem;
+  width: min(90%, 18rem);
+  max-height: 80vh; /* Prevent overflow beyond viewport */
+  background: var(--background-secondary);
+  padding: 1rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 0.8rem 2.4rem var(--shadow-elevated);
+  opacity: 0;
+  transform: scale(0.96) translateY(0.4rem);
+  z-index: 1200;
+  border: 1px solid var(--border-secondary);
+  overflow-y: auto; /* Enable vertical scroll if content overflows */
+  transition: background 0.3s ease, border-color 0.3s ease, opacity 0.3s ease, transform 0.3s ease;
+  display: none; /* Hidden by default */
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: var(--text-tertiary) var(--background-secondary); /* Firefox */
+}
 
-    .custom-g-signin:hover {
-      background: #f7f8f8;
-      border-color: #d2d3d5;
-    }
+.profile-page::-webkit-scrollbar {
+  width: 6px;
+}
 
-    .custom-g-signin:active {
-      background: #f1f3f4;
-    }
+.profile-page::-webkit-scrollbar-track {
+  background: var(--background-secondary);
+}
 
-    .custom-g-signin .g-icon {
-      width: 18px;
-      height: 18px;
-    }
+.profile-page::-webkit-scrollbar-thumb {
+  background: var(--text-tertiary);
+  border-radius: 3px;
+}
 
-    .close-btn {
-      position: absolute;
-      top: 16px;
-      right: 16px;
-      width: 24px;
-      height: 24px;
-      background: transparent;
-      border: none;
-      border-radius: 50%;
-      cursor: pointer;
-      display: flex;
-      cursor: default;
-      align-items: center;
-      justify-content: center;
-      color: #5f6368;
-      font-size: 16px;
-      transition: background 0.2s;
-    }
+.profile-page::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary);
+}
 
-    .close-btn:hover {
-        color: #222425;
-    }
+body.dark .profile-page {
+  background: var(--background-secondary);
+  border-color: var(--border-secondary);
+}
 
-    .footer {
-      margin-top: 24px;
-      font-size: 11px;
-      color: #70757a;
-      line-height: 1.5;
-      text-align: center;
-    }
+.profile-page.show {
+  display: block;
+  opacity: 1;
+  transform: scale(1) translateY(0);
+  animation: modalFadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
 
-    .footer a {
-      color: #1a73e8;
-      text-decoration: none;
-      font-weight: 500;
-    }
+.profile-page.hide {
+  opacity: 0;
+  transform: scale(0.96) translateY(0.4rem);
+  animation: modalFadeOut 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
 
-    .footer a:hover {
-      text-decoration: underline;
-    }
+.profile-page::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 0.25rem;
+  background: var(--text-primary);
+}
 
-    /* Animations */
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: scale(0.95) translateY(12px);
-      }
-      to {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-      }
-    }
+h2 {
+  color: var(--text-primary);
+  font-size: 1.125rem;
+  font-weight: 500;
+  margin: 0.75rem 0 0.375rem;
+  letter-spacing: 0.0075rem;
+  transition: color 0.3s ease;
+}
 
-    @keyframes modalFadeIn {
-      from {
-        opacity: 0;
-        transform: scale(0.96) translateY(12px);
-      }
-      to {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-      }
-    }
+body.dark h2 {
+  color: var(--text-primary);
+}
 
-    @keyframes modalFadeOut {
-      from {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-      }
-      to {
-        opacity: 0;
-        transform: scale(0.96) translateY(12px);
-      }
-    }
+.profile-option {
+  width: 100%;
+  padding: 0.6rem 0.8rem;
+  background: var(--background-secondary);
+  color: var(--text-primary);
+  border: none;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.3s ease, color 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.6rem;
+  letter-spacing: 0.0125rem;
+  margin-bottom: 0.375rem;
+  text-align: left;
+}
 
-    /* Responsive adjustments */
-    @media (max-width: 480px) {
-      .signup-popup {
-        right: 20px;
-        padding: 8px 16px;
-      }
-      
-      .signin-page {
-        right: 20px;
-        width: calc(100% - 40px);
-        max-width: 360px;
-      }
-    }
+body.dark .profile-option {
+  background: var(--background-secondary);
+  color: var(--text-primary);
+}
+
+.profile-option:hover {
+  background: var(--button-hover);
+}
+
+body.dark .profile-option:hover {
+  background: var(--button-hover);
+}
+
+.profile-option:active {
+  background: var(--button-active);
+}
+
+body.dark .profile-option:active {
+  background: var(--button-active);
+}
+
+.profile-option img {
+  width: 1rem;
+  height: 1rem;
+  filter: var(--icon-filter);
+  transition: filter 0.3s ease;
+}
+
+body.dark .profile-option img {
+  filter: var(--icon-filter);
+}
+
+.theme-option {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-right: 0.6rem;
+}
+
+.theme-label {
+  color: var(--text-primary);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+body.dark .theme-label {
+  color: var(--text-primary);
+}
+
+.theme-switch {
+  position: relative;
+  display: inline-block;
+  width: 1.75rem;
+  height: 1rem;
+}
+
+.theme-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--text-tertiary);
+  transition: 0.4s;
+  border-radius: 1.75rem;
+}
+
+body.dark .slider {
+  background-color: var(--border-hover);
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 0.75rem;
+  width: 0.75rem;
+  left: 0.125rem;
+  bottom: 0.125rem;
+  background-color: var(--background-secondary);
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: var(--accent-primary);
+}
+
+body.dark input:checked + .slider {
+  background-color: var(--accent-primary);
+}
+
+input:checked + .slider:before {
+  transform: translateX(0.75rem);
+}
+
+.language-options {
+  max-height: 0;
+  flex-direction: column;
+  gap: 0.375rem;
+  padding-left: 1.5rem;
+  margin-bottom: 0.375rem;
+  overflow: hidden;
+  transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
+  opacity: 0;
+}
+
+.language-options.show {
+  max-height: 12rem;
+  opacity: 1;
+}
+
+.language-option {
+  width: 100%;
+  padding: 0.375rem 0.8rem;
+  background: var(--background-secondary);
+  color: var(--text-primary);
+  border: none;
+  font-size: 0.8125rem;
+  font-weight: 400;
+  cursor: pointer;
+  transition: background 0.3s ease, color 0.3s ease;
+  text-align: left;
+}
+
+.language-option:hover {
+  background: var(--button-hover);
+}
+
+body.dark .language-option:hover {
+  background: var(--button-hover);
+}
+
+.language-option:active {
+  background: var(--button-active);
+}
+
+body.dark .language-option:active {
+  background: var(--button-active);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-0.6rem);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.98) translateY(-0.6rem);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes modalFadeOut {
+  from {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.96) translateY(-0.2rem);
+  }
+}
+
+.hero-section {
+  background-color: var(--background-primary);
+  min-height: clamp(50vh, 70vh, 80vh); /* Shorter on mobile to focus content at top */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; /* Start content at top */
+  align-items: center;
+  padding: clamp(1.5rem, 6vw, 3rem) clamp(1rem, 5vw, 3rem); /* Reduced top padding for mobile */
+  padding-top: clamp(8rem, 6vh, 6rem); /* Smaller top padding to place content higher */
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  box-sizing: border-box;
+  transition: padding 0.3s ease, min-height 0.3s ease;
+}
+
+.hero-section h1 {
+  color: var(--text-primary);
+  font-size: clamp(1.75rem, 5.5vw, 3.25rem);
+  font-weight: 600;
+  margin-bottom: clamp(0.75rem, 3vw, 1.5rem);
+  text-align: center;
+  letter-spacing: -0.015em;
+  line-height: 1.2;
+  max-width: clamp(90%, 80vw, 800px);
+}
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  background-color: var(--background-secondary);
+  border: 1px solid var(--border-primary);
+  border-radius: clamp(6px, 1.5vw, 8px); /* Slightly smaller radius on mobile */
+  width: clamp(280px, 80vw, 600px); /* Narrower on mobile, wider on desktop */
+  max-width: 750px;
+  height: clamp(48px, 6vh, 55px); /* Shorter on mobile */
+  margin: clamp(0.5rem, 2vw, 1rem) auto; /* Centered with responsive margin */
+  padding: 0 clamp(0.3rem, 1.5vw, 0.8rem); /* Tighter padding on mobile */
+  box-shadow: 0 0.4rem 0.6rem var(--shadow-subtle), 0 0.2rem 0.4rem var(--shadow-subtle);
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+              height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 0.4s ease,
+              border-color 0.4s ease,
+              border-radius 0.4s ease;
+}
+
+.search-bar:focus-within {
+  width: clamp(300px, 85vw, 650px); /* Slightly larger expansion */
+  height: clamp(52px, 6.5vh, 60px); /* Slightly taller when focused */
+  border-radius: 4px; /* More rectangular when focused */
+  box-shadow: 0 0.3rem 0.5rem var(--shadow-subtle), 0 0.5rem 1rem var(--shadow-medium);
+  border-color: var(--border-hover);
+}
+
+.search-bar input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-size: clamp(0.875rem, 2.2vw, 1rem); /* Smaller text on mobile */
+  padding: clamp(0.4rem, 1.5vw, 0.8rem); /* Responsive padding */
+  outline: none;
+  transition: font-size 0.3s ease; /* Removed to prevent text jumping */
+  line-height: 1.5; /* Better text alignment */
+}
+
+/* Placeholder text */
+.search-bar input::placeholder {
+  color: var(--text-secondary);
+  font-size: clamp(0.875rem, 2.2vw, 1rem);
+  opacity: 0.6; /* Slightly lower for better contrast */
+  transition: opacity 0.3s ease;
+}
+
+/* Main button styling */
+.search-bar button {
+  background: transparent;
+  border: none;
+  border-radius: 50%;
+  width: clamp(40px, 5vw, 48px); /* Smaller button on mobile */
+  height: clamp(40px, 5vw, 48px);
+  min-width: 40px; /* Touch-friendly minimum */
+  min-height: 40px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 0.2s ease;
+}
+
+/* Focus state for accessibility */
+.search-bar button:focus-visible {
+  box-shadow: 0 0 0 2px var(--accent-primary);
+  outline: none;
+}
+
+/* Hover effect */
+.search-bar button:hover {
+  transform: scale(1.08); /* Slightly larger hover scale */
+}
+
+/* Active (click) effect */
+.search-bar button:active {
+  transform: scale(0.92); /* Slightly more pronounced click */
+  background: var(--button-active);
+}
+
+/* Icon inside the button */
+.search-bar button img {
+  width: clamp(16px, 3vw, 20px); /* Smaller icons on mobile */
+  height: clamp(16px, 3vw, 20px);
+  filter: var(--icon-filter);
+  transition: filter 0.2s ease;
+}
+
+/* Icon hover effect */
+.search-bar button:hover img {
+  filter: var(--icon-hover-filter);
+}
+
+/* Media query for extra-small screens (e.g., <320px) */
+@media (max-width: 320px) {
+  .search-bar {
+    width: clamp(240px, 90vw, 280px);
+    height: 44px;
+    padding: 0 0.3rem;
+  }
+
+  .search-bar:focus-within {
+    width: clamp(260px, 95vw, 300px);
+    height: 48px;
+  }
+
+  .search-bar input {
+    font-size: 0.85rem;
+    padding: 0.3rem 0.5rem;
+  }
+
+  .search-bar input::placeholder {
+    font-size: 0.85rem;
+  }
+
+  .search-bar button {
+    width: 36px;
+    height: 36px;
+  }
+
+  .search-bar button img {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+/* Media query for larger screens (e.g., >1200px) */
+@media (min-width: 1200px) {
+  .search-bar {
+    width: clamp(600px, 50vw, 700px);
+    height: 60px;
+    padding: 0 1.2rem;
+  }
+
+  .search-bar:focus-within {
+    width: clamp(650px, 55vw, 750px);
+    height: 65px;
+  }
+
+  .search-bar input {
+    font-size: 1.125rem;
+    padding: 0 1.2rem;
+  }
+
+  .search-bar input::placeholder {
+    font-size: 1.125rem;
+  }
+
+  .search-bar button {
+    width: 52px;
+    height: 52px;
+  }
+
+  .search-bar button img {
+    width: 22px;
+    height: 22px;
+  }
+}
+
+/* Base dialog styles for all modals */
+.logout-dialog,
+.action-dialog,
+.feedback-dialog,
+.help-dialog,
+.profile-dialog,
+.location-dialog {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, clamp(0.3, 2vw, 0.45));
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  opacity: 0;
+  transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: clamp(0.5rem, 2vw, 1rem);
+}
+
+.logout-dialog.show,
+.action-dialog.show,
+.feedback-dialog.show,
+.help-dialog.show,
+.profile-dialog.show,
+.location-dialog.show {
+  display: flex;
+  opacity: 1;
+  animation: modalFadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.logout-dialog.hide,
+.action-dialog.hide,
+.feedback-dialog.hide,
+.help-dialog.hide,
+.profile-dialog.hide,
+.location-dialog.hide {
+  animation: modalFadeOut 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  opacity: 0;
+}
+
+/* Shared content styles */
+.logout-dialog-content,
+.action-dialog-content,
+.feedback-dialog-content,
+.help-dialog-content,
+.profile-dialog-content,
+.location-dialog-content {
+  position: relative;
+  background: var(--background-secondary);
+  border: 1px solid var(--border-secondary);
+  border-radius: clamp(0.6rem, 1.5vw, 0.8rem);
+  box-shadow: 0 clamp(0.5rem, 1.2vw, 0.7rem) clamp(1.5rem, 3vw, 2rem) var(--shadow-elevated);
+  width: clamp(18rem, 60vw, 32rem);
+  max-width: min(90vw, 36rem);
+  max-height: min(85vh, 45rem);
+  padding: clamp(1.25rem, 3vw, 1.75rem);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.75rem, 1.8vw, 1rem);
+  overflow-y: auto;
+  transform: scale(0.95);
+  transition: background 0.3s ease, border-color 0.3s ease, transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  scrollbar-width: thin;
+  scrollbar-color: var(--text-tertiary) transparent;
+}
+
+.logout-dialog-content::-webkit-scrollbar,
+.action-dialog-content::-webkit-scrollbar,
+.feedback-dialog-content::-webkit-scrollbar,
+.help-dialog-content::-webkit-scrollbar,
+.profile-dialog-content::-webkit-scrollbar,
+.location-dialog-content::-webkit-scrollbar {
+  width: clamp(4px, 1vw, 6px);
+}
+
+.logout-dialog-content::-webkit-scrollbar-track,
+.action-dialog-content::-webkit-scrollbar-track,
+.feedback-dialog-content::-webkit-scrollbar-track,
+.help-dialog-content::-webkit-scrollbar-track,
+.profile-dialog-content::-webkit-scrollbar-track,
+.location-dialog-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.logout-dialog-content::-webkit-scrollbar-thumb,
+.action-dialog-content::-webkit-scrollbar-thumb,
+.feedback-dialog-content::-webkit-scrollbar-thumb,
+.help-dialog-content::-webkit-scrollbar-thumb,
+.profile-dialog-content::-webkit-scrollbar-thumb,
+.location-dialog-content::-webkit-scrollbar-thumb {
+  background: var(--text-tertiary);
+  border-radius: clamp(2px, 0.5vw, 3px);
+}
+
+.logout-dialog-content::-webkit-scrollbar-thumb:hover,
+.action-dialog-content::-webkit-scrollbar-thumb:hover,
+.feedback-dialog-content::-webkit-scrollbar-thumb:hover,
+.help-dialog-content::-webkit-scrollbar-thumb:hover,
+.profile-dialog-content::-webkit-scrollbar-thumb:hover,
+.location-dialog-content::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary);
+}
+
+.logout-dialog-content::before,
+.action-dialog-content::before,
+.feedback-dialog-content::before,
+.help-dialog-content::before,
+.profile-dialog-content::before,
+.location-dialog-content::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: clamp(0.2rem, 0.5vw, 0.25rem);
+  background: var(--text-primary);
+  border-top-left-radius: inherit;
+  border-top-right-radius: inherit;
+}
+
+.logout-dialog.show .logout-dialog-content,
+.action-dialog.show .action-dialog-content,
+.feedback-dialog.show .feedback-dialog-content,
+.help-dialog.show .help-dialog-content,
+.profile-dialog.show .profile-dialog-content,
+.location-dialog.show .location-dialog-content {
+  transform: scale(1);
+}
+
+body.dark .logout-dialog-content,
+body.dark .action-dialog-content,
+body.dark .feedback-dialog-content,
+body.dark .help-dialog-content,
+body.dark .profile-dialog-content,
+body.dark .location-dialog-content {
+  background: var(--background-secondary);
+  border-color: var(--border-secondary);
+}
+
+/* Profile dialog specific */
+.profile-logo {
+  font-family: 'Roboto Slab', serif;
+  font-size: clamp(1rem, 3vw, 1.25rem);
+  font-weight: 500;
+  color: var(--text-primary);
+  text-align: center;
+  margin: clamp(0.25rem, 1vw, 0.5rem) 0 clamp(0.5rem, 1.5vw, 0.75rem);
+}
+
+.profile-heading {
+  font-size: clamp(0.875rem, 2.5vw, 1rem);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 clamp(0.5rem, 1.5vw, 0.75rem);
+  text-align: left;
+}
+
+.profile-content {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.75rem, 1.8vw, 1rem);
+}
+
+.profile-picture {
+  width: clamp(4rem, 12vw, 5rem);
+  height: clamp(4rem, 12vw, 5rem);
+  border-radius: 50%;
+  object-fit: cover;
+  margin: 0 auto;
+  border: 1px solid var(--border-primary);
+}
+
+.profile-field {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.25rem, 1vw, 0.375rem);
+}
+
+.profile-field label {
+  font-size: clamp(0.75rem, 2vw, 0.875rem);
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.profile-field p {
+  font-size: clamp(0.75rem, 2vw, 0.875rem);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.profile-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: clamp(0.5rem, 1.5vw, 0.75rem);
+  margin-top: clamp(0.5rem, 1.5vw, 0.75rem);
+}
+
+.profile-button {
+  padding: clamp(0.5rem, 1.5vw, 0.625rem) clamp(1rem, 2.5vw, 1.25rem);
+  border-radius: clamp(1rem, 2vw, 1.5rem);
+  font-size: clamp(0.75rem, 2vw, 0.875rem);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+  min-width: clamp(4rem, 12vw, 5rem);
+}
+
+.profile-button.cancel {
+  border: 1px solid var(--border-primary);
+  background: var(--background-secondary);
+  color: var(--text-primary);
+}
+
+.profile-button.cancel:hover {
+  background: var(--button-hover);
+  border-color: var(--border-hover);
+}
+
+.profile-button.cancel:active,
+.profile-button.cancel:focus {
+  background: var(--button-active);
+  transform: scale(0.98);
+}
+
+.profile-button.edit {
+  border: none;
+  background: var(--accent-primary);
+  color: #fff;
+}
+
+.profile-button.edit:hover {
+  background: var(--accent-hover);
+}
+
+.profile-button.edit:active,
+.profile-button.edit:focus {
+  background: var(--accent-hover);
+  transform: scale(0.98);
+}
+
+.profile-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 clamp(2px, 0.5vw, 3px) rgba(26, 115, 232, 0.3);
+}
+
+body.dark .profile-button.cancel {
+  background: var(--background-secondary);
+  color: var(--text-primary);
+  border-color: var(--border-primary);
+}
+
+body.dark .profile-button.cancel:hover {
+  background: var(--button-hover);
+  border-color: var(--border-hover);
+}
+
+body.dark .profile-button.cancel:active,
+body.dark .profile-button.cancel:focus {
+  background: var(--button-active);
+}
+
+body.dark .profile-button.edit {
+  background: var(--accent-primary);
+}
+
+body.dark .profile-button.edit:hover {
+  background: var(--accent-hover);
+}
+
+body.dark .profile-button.edit:active,
+body.dark .profile-button.edit:focus {
+  background: var(--accent-hover);
+}
+
+/* Location dialog specific */
+.location-logo {
+  font-family: 'Roboto Slab', serif;
+  font-size: clamp(1rem, 3vw, 1.25rem);
+  font-weight: 500;
+  color: var(--text-primary);
+  text-align: center;
+  margin: clamp(0.25rem, 1vw, 0.5rem) 0 clamp(0.5rem, 1.5vw, 0.75rem);
+}
+
+.location-heading {
+  font-size: clamp(0.875rem, 2.5vw, 1rem);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 clamp(0.5rem, 1.5vw, 0.75rem);
+  text-align: left;
+}
+
+.location-content {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.75rem, 1.8vw, 1rem);
+}
+
+.location-field {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.25rem, 1vw, 0.375rem);
+}
+
+.location-field label {
+  font-size: clamp(0.75rem, 2vw, 0.875rem);
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.location-field input {
+  width: 100%;
+  padding: clamp(0.5rem, 1.5vw, 0.625rem);
+  border: 1px solid var(--border-primary);
+  border-radius: clamp(0.25rem, 1vw, 0.375rem);
+  background: var(--background-secondary);
+  color: var(--text-primary);
+  font-size: clamp(0.75rem, 2vw, 0.875rem);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.location-field input:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 clamp(2px, 0.5vw, 3px) rgba(26, 115, 232, 0.3);
+}
+
+.location-field input::placeholder {
+  color: var(--text-tertiary);
+  opacity: 0.7;
+}
+
+body.dark .location-field input {
+  background: var(--background-secondary);
+  color: var(--text-primary);
+  border-color: var(--border-primary);
+}
+
+body.dark .location-field input:focus {
+  border-color: var(--accent-primary);
+}
+
+.location-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: clamp(0.5rem, 1.5vw, 0.75rem);
+  margin-top: clamp(0.5rem, 1.5vw, 0.75rem);
+}
+
+.location-button {
+  padding: clamp(0.5rem, 1.5vw, 0.625rem) clamp(1rem, 2.5vw, 1.25rem);
+  border-radius: clamp(1rem, 2vw, 1.5rem);
+  font-size: clamp(0.75rem, 2vw, 0.875rem);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+  min-width: clamp(4rem, 12vw, 5rem);
+}
+
+.location-button.cancel {
+  border: 1px solid var(--border-primary);
+  background: var(--background-secondary);
+  color: var(--text-primary);
+}
+
+.location-button.cancel:hover {
+  background: var(--button-hover);
+  border-color: var(--border-hover);
+}
+
+.location-button.cancel:active,
+.location-button.cancel:focus {
+  background: var(--button-active);
+  transform: scale(0.98);
+}
+
+.location-button.change {
+  border: none;
+  background: var(--accent-primary);
+  color: #fff;
+}
+
+.location-button.change:hover {
+  background: var(--accent-hover);
+}
+
+.location-button.change:active,
+.location-button.change:focus {
+  background: var(--accent-hover);
+  transform: scale(0.98);
+}
+
+.location-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 clamp(2px, 0.5vw, 3px) rgba(26, 115, 232, 0.3);
+}
+
+body.dark .location-button.cancel {
+  background: var(--background-secondary);
+  color: var(--text-primary);
+  border-color: var(--border-primary);
+}
+
+body.dark .location-button.cancel:hover {
+  background: var(--button-hover);
+  border-color: var(--border-hover);
+}
+
+body.dark .location-button.cancel:active,
+body.dark .location-button.cancel:focus {
+  background: var(--button-active);
+}
+
+body.dark .location-button.change {
+  background: var(--accent-primary);
+}
+
+body.dark .location-button.change:hover {
+  background: var(--accent-hover);
+}
+
+body.dark .location-button.change:active,
+body.dark .location-button.change:focus {
+  background: var(--accent-hover);
+}
+
+/* Animation keyframes */
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes modalFadeOut {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}
+
+/* Logout dialog specific */
+.logout-heading {
+  font-size: clamp(0.875rem, 2.5vw, 1rem);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: clamp(0.5rem, 1.5vw, 0.75rem) 0 clamp(0.25rem, 1vw, 0.5rem);
+  text-align: left;
+}
+
+.logout-message {
+  font-size: clamp(0.75rem, 2vw, 0.875rem);
+  color: var(--text-primary);
+  margin: 0 0 clamp(0.5rem, 1.5vw, 0.75rem);
+  text-align: left;
+}
+
+.logout-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: clamp(0.5rem, 1.5vw, 0.75rem);
+  margin-top: clamp(0.25rem, 1vw, 0.5rem);
+}
+
+.logout-button {
+  padding: clamp(0.5rem, 1.5vw, 0.625rem) clamp(1rem, 2.5vw, 1.25rem);
+  border-radius: clamp(1rem, 2vw, 1.5rem);
+  font-size: clamp(0.75rem, 2vw, 0.875rem);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+  min-width: clamp(4rem, 12vw, 5rem);
+}
+
+.logout-button.cancel {
+  border: 1px solid var(--border-primary);
+  background: var(--background-secondary);
+  color: var(--text-primary);
+}
+
+.logout-button.cancel:hover {
+  background: var(--button-hover);
+  border-color: var(--border-hover);
+}
+
+.logout-button.cancel:active,
+.logout-button.cancel:focus {
+  background: var(--button-active);
+  transform: scale(0.98);
+}
+
+.logout-button.confirm {
+  border: none;
+  background: var(--accent-primary);
+  color: #fff;
+}
+
+.logout-button.confirm:hover {
+  background: var(--accent-hover);
+}
+
+.logout-button.confirm:active,
+.logout-button.confirm:focus {
+  background: var(--accent-hover);
+  transform: scale(0.98);
+}
+
+.logout-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 clamp(2px, 0.5vw, 3px) rgba(26, 115, 232, 0.3);
+}
+
+body.dark .logout-button.cancel {
+  background: var(--background-secondary);
+  color: var(--text-primary);
+  border-color: var(--border-primary);
+}
+
+body.dark .logout-button.cancel:hover {
+  background: var(--button-hover);
+  border-color: var(--border-hover);
+}
+
+body.dark .logout-button.cancel:active,
+body.dark .logout-button.cancel:focus {
+  background: var(--button-active);
+}
+
+body.dark .logout-button.confirm {
+  background: var(--accent-primary);
+}
+
+body.dark .logout-button.confirm:hover {
+  background: var(--accent-hover);
+}
+
+body.dark .logout-button.confirm:active,
+body.dark .logout-button.confirm:focus {
+  background: var(--accent-hover);
+}
+
+/* Action dialog specific */
+.action-heading {
+  font-size: clamp(0.875rem, 2.5vw, 1rem);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: clamp(0.5rem, 1.5vw, 0.75rem) 0 clamp(0.25rem, 1vw, 0.5rem);
+  text-align: left;
+}
+
+.action-message {
+  font-size: clamp(0.75rem, 2vw, 0.875rem);
+  color: var(--text-primary);
+  margin: 0 0 clamp(0.5rem, 1.5vw, 0.75rem);
+  text-align: left;
+}
+
+.action-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: clamp(0.5rem, 1.5vw, 0.75rem);
+  margin-top: clamp(0.25rem, 1vw, 0.5rem);
+}
+
+.action-button {
+  padding: clamp(0.5rem, 1.5vw, 0.625rem) clamp(1rem, 2.5vw, 1.25rem);
+  border-radius: clamp(1rem, 2vw, 1.5rem);
+  font-size: clamp(0.75rem, 2vw, 0.875rem);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+  border: 1px solid var(--border-primary);
+  background: var(--background-secondary);
+  color: var(--text-primary);
+  min-width: clamp(4rem, 12vw, 5rem);
+}
+
+.action-button:hover {
+  background: var(--button-hover);
+  border-color: var(--border-hover);
+}
+
+.action-button:active,
+.action-button:focus {
+  background: var(--button-active);
+  transform: scale(0.98);
+}
+
+.action-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 clamp(2px, 0.5vw, 3px) rgba(26, 115, 232, 0.3);
+}
+
+body.dark .action-button {
+  background: var(--background-secondary);
+  color: var(--text-primary);
+  border-color: var(--border-primary);
+}
+
+body.dark .action-button:hover {
+  background: var(--button-hover);
+  border-color: var(--border-hover);
+}
+
+body.dark .action-button:active,
+body.dark .action-button:focus {
+  background: var(--button-active);
+}
+
+/* Feedback dialog specific */
+.feedback-logo {
+  font-family: 'Roboto Slab', serif;
+  font-size: clamp(1rem, 3vw, 1.25rem);
+  font-weight: 500;
+  color: var(--text-primary);
+  text-align: center;
+  margin: clamp(0.25rem, 1vw, 0.5rem) 0 clamp(0.5rem, 1.5vw, 0.75rem);
+}
+
+.feedback-heading {
+  font-size: clamp(0.875rem, 2.5vw, 1rem);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 clamp(0.5rem, 1.5vw, 0.75rem);
+  text-align: left;
+}
+
+.feedback-form {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.75rem, 2vw, 1rem);
+}
+
+.feedback-field {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.25rem, 1vw, 0.375rem);
+}
+
+.feedback-field label {
+  font-size: clamp(0.75rem, 2vw, 0.875rem);
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.feedback-field input,
+.feedback-field textarea {
+  width: 100%;
+  padding: clamp(0.5rem, 1.5vw, 0.625rem);
+  border: 1px solid var(--border-primary);
+  border-radius: clamp(0.25rem, 1vw, 0.375rem);
+  background: var(--background-secondary);
+  color: var(--text-primary);
+  font-size: clamp(0.75rem, 2vw, 0.875rem);
+  resize: vertical;
+  min-height: clamp(2rem, 5vw, 2.5rem);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.feedback-field textarea {
+  min-height: clamp(4rem, 10vw, 5rem);
+}
+
+.feedback-field input:focus,
+.feedback-field textarea:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 clamp(2px, 0.5vw, 3px) rgba(26, 115, 232, 0.3);
+}
+
+.feedback-field input::placeholder,
+.feedback-field textarea::placeholder {
+  color: var(--text-tertiary);
+  opacity: 0.7;
+}
+
+body.dark .feedback-field input,
+body.dark .feedback-field textarea {
+  background: var(--background-secondary);
+  color: var(--text-primary);
+  border-color: var(--border-primary);
+}
+
+body.dark .feedback-field input:focus,
+body.dark .feedback-field textarea:focus {
+  border-color: var(--accent-primary);
+}
+
+.feedback-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: clamp(0.5rem, 1.5vw, 0.75rem);
+  margin-top: clamp(0.5rem, 1.5vw, 0.75rem);
+}
+
+.feedback-button {
+  padding: clamp(0.5rem, 1.5vw, 0.625rem) clamp(1rem, 2.5vw, 1.25rem);
+  border-radius: clamp(1rem, 2vw, 1.5rem);
+  font-size: clamp(0.75rem, 2vw, 0.875rem);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+  min-width: clamp(4rem, 12vw, 5rem);
+}
+
+.feedback-button.cancel {
+  border: 1px solid var(--border-primary);
+  background: var(--background-secondary);
+  color: var(--text-primary);
+}
+
+.feedback-button.cancel:hover {
+  background: var(--button-hover);
+  border-color: var(--border-hover);
+}
+
+.feedback-button.cancel:active,
+.feedback-button.cancel:focus {
+  background: var(--button-active);
+  transform: scale(0.98);
+}
+
+.feedback-button.submit {
+  border: none;
+  background: var(--accent-primary);
+  color: #fff;
+}
+
+.feedback-button.submit:hover {
+  background: var(--accent-hover);
+}
+
+.feedback-button.submit:active,
+.feedback-button.submit:focus {
+  background: var(--accent-hover);
+  transform: scale(0.98);
+}
+
+.feedback-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 clamp(2px, 0.5vw, 3px) rgba(26, 115, 232, 0.3);
+}
+
+body.dark .feedback-button.cancel {
+  background: var(--background-secondary);
+  color: var(--text-primary);
+  border-color: var(--border-primary);
+}
+
+body.dark .feedback-button.cancel:hover {
+  background: var(--button-hover);
+  border-color: var(--border-hover);
+}
+
+body.dark .feedback-button.cancel:active,
+body.dark .feedback-button.cancel:focus {
+  background: var(--button-active);
+}
+
+body.dark .feedback-button.submit {
+  background: var(--accent-primary);
+}
+
+body.dark .feedback-button.submit:hover {
+  background: var(--accent-hover);
+}
+
+body.dark .feedback-button.submit:active,
+body.dark .feedback-button.submit:focus {
+  background: var(--accent-hover);
+}
+
+/* Help dialog specific */
+.help-logo {
+  font-family: 'Roboto Slab', serif;
+  font-size: clamp(1rem, 3vw, 1.25rem);
+  font-weight: 500;
+  color: var(--text-primary);
+  text-align: center;
+  margin: clamp(0.25rem, 1vw, 0.5rem) 0 clamp(0.5rem, 1.5vw, 0.75rem);
+}
+
+.help-heading {
+  font-size: clamp(0.875rem, 2.5vw, 1rem);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 clamp(0.5rem, 1.5vw, 0.75rem);
+  text-align: left;
+}
+
+.help-content {
+  font-size: clamp(0.75rem, 2vw, 0.875rem);
+  color: var(--text-primary);
+  margin: 0 0 clamp(0.5rem, 1.5vw, 0.75rem);
+  text-align: left;
+}
+
+.help-content p {
+  margin: clamp(0.25rem, 1vw, 0.5rem) 0;
+}
+
+.help-content ul {
+  margin: clamp(0.25rem, 1vw, 0.5rem) 0;
+  padding-left: clamp(1rem, 2.5vw, 1.25rem);
+}
+
+.help-content li {
+  margin-bottom: clamp(0.25rem, 1vw, 0.5rem);
+}
+
+.help-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: clamp(0.5rem, 1.5vw, 0.75rem);
+  margin-top: clamp(0.25rem, 1vw, 0.5rem);
+}
+
+.help-button {
+  padding: clamp(0.5rem, 1.5vw, 0.625rem) clamp(1rem, 2.5vw, 1.25rem);
+  border-radius: clamp(1rem, 2vw, 1.5rem);
+  font-size: clamp(0.75rem, 2vw, 0.875rem);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+  border: 1px solid var(--border-primary);
+  background: var(--background-secondary);
+  color: var(--text-primary);
+  min-width: clamp(4rem, 12vw, 5rem);
+}
+
+.help-button:hover {
+  background: var(--button-hover);
+  border-color: var(--border-hover);
+}
+
+.help-button:active,
+.help-button:focus {
+  background: var(--button-active);
+  transform: scale(0.98);
+}
+
+.help-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 clamp(2px, 0.5vw, 3px) rgba(26, 115, 232, 0.3);
+}
+
+body.dark .help-button {
+  background: var(--background-secondary);
+  color: var(--text-primary);
+  border-color: var(--border-primary);
+}
+
+body.dark .help-button:hover {
+  background: var(--button-hover);
+  border-color: var(--border-hover);
+}
+
+body.dark .help-button:active,
+body.dark .help-button:focus {
+  background: var(--button-active);
+}
   </style>
 </head>
 <body>
-  <div class="main-page">
-    <h1>Welcome to Signup Demo</h1>
+<body>
+<div class="topbar">
+  <div class="logo">
+    <span>Contractor</span>
   </div>
-
-  <!-- Sign in Button -->
-<div id="signupPopup" class="signup-popup" onclick="toggleSignIn()">
-  <div class="google-icon">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-      <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-      <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
-      <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-    </svg>
-  </div>
-  <span class="google-text">Sign in</span>
-</div>
-
-  <!-- Signin modal -->
-  <div id="signinPage" class="signin-page">
-    <button class="close-btn" onclick="closeSignIn()">✕</button>
-    <h2>Sign in with Google</h2>
-    <p>To continue, sign in with your Google account. This helps us keep your information secure.</p>
-    <button class="custom-g-signin" onclick="triggerGoogleSignIn()">
-      <img src="https://www.google.com/favicon.ico" alt="Google Icon" class="g-icon" />
-      Sign in with Google
-    </button>
-    <div class="footer">
-      <p>By continuing, you agree to our <a href="#" target="_blank">Terms of Service</a> and acknowledge our <a href="#" target="_blank">Privacy Policy</a>.</p>
+  <div class="topbar-right">
+    <!-- 🔔 Notification Icon -->
+    <div class="notification-toggle" role="button" aria-label="Toggle notifications" onclick="openNotificationPanel()">
+      <div class="notification-icon">
+        <img src="icon/notification.svg" alt="Notification Icon" />
+      </div>
+    </div>
+    <div id="notificationPanel" class="notification-panel">
+      <h2 class="notification-heading">Notifications</h2>
+      <div class="notification-option" onclick="viewNotification(1)">
+        <img src="icon/notification.svg" alt="Notification Icon" />
+        New message from contractor
+      </div>
+      <div class="notification-option" onclick="viewNotification(2)">
+        <img src="icon/notification.svg" alt="Notification Icon" />
+        Project deadline approaching
+      </div>
+      <div class="notification-option" onclick="viewNotification(3)">
+        <img src="icon/notification.svg" alt="Notification Icon" />
+        Profile update required
+      </div>
+      <div class="notification-option clear" onclick="clearNotifications()">
+        <img src="icon/clear.svg" alt="Clear Icon" />
+        Clear all notifications
+      </div>
+    </div>
+    <!-- 👤 Profile Icon -->
+    <div id="profilePopup" class="profile-popup" role="button" aria-label="Toggle profile menu" onclick="toggleProfile()">
+      <div class="profile-icon">
+        <img src="icon/profile.svg" alt="Profile Icon" />
+      </div>
+      <span class="profile-text">Profile</span>
+    </div>
+    <div id="profilePage" class="profile-page">
+      <h2>Profile</h2>
+      <div class="profile-option" onclick="openProfile()">
+        <img src="icon/profile.svg" alt="Profile Icon" />
+        Profile
+      </div>
+      <div class="profile-option" onclick="toggleLanguages()">
+        <img src="icon/language.svg" alt="Language Icon" />
+        Languages
+        <img src="icon/down-arrow.svg" alt="Dropdown icon" class="language-option-icon" width="12" height="12" />
+      </div>
+      <div id="languageOptions" class="language-options">
+        <div class="language-option" onclick="selectLanguage('English')">English</div>
+        <div class="language-option" onclick="selectLanguage('German')">German</div>
+        <div class="language-option" onclick="selectLanguage('Urdu')">Urdu</div>
+        <div class="language-option" onclick="selectLanguage('Arabic')">Arabic</div>
+        <div class="language-option" onclick="selectLanguage('French')">French</div>
+      </div>
+      <div class="profile-option" onclick="openLocation()">
+        <img src="icon/location.svg" alt="Location Icon" />
+        Location
+      </div>
+      <div class="profile-option theme-option">
+        <div style="display: flex; align-items: center; gap: 0.6rem;">
+          <img src="icon/theme.svg" alt="Theme Icon" />
+          <span class="theme-label">Theme</span>
+        </div>
+        <label class="theme-switch">
+          <input type="checkbox" id="themeToggle" onchange="toggleTheme()">
+          <span class="slider"></span>
+        </label>
+      </div>
+      <div class="profile-option" onclick="sendFeedback()">
+        <img src="icon/feedback.svg" alt="Feedback Icon" />
+        Send feedback
+      </div>
+      <div class="profile-option" onclick="logout()">
+        <img src="icon/logout.svg" alt="Logout Icon" />
+        Logout
+      </div>
+      <div class="profile-option" onclick="openHelp()">
+        <img src="icon/help.svg" alt="Help Icon" />
+        Help
+      </div>
     </div>
   </div>
+</div>
 
-  <script src="https://apis.google.com/js/platform.js?onload=initGoogleSignIn" async defer></script>
-   <script src="https://apis.google.com/js/platform.js?onload=initGoogleSignIn" async defer></script>
-  <script>
-    let auth2;
-    function initGoogleSignIn() {
-      gapi.load('auth2', () => {
-        auth2 = gapi.auth2.init({
-          client_id: '834487051944-vlirmtab6qpa92572rkfs5hvmjcicjt4.apps.googleusercontent.com'
-        });
-        auth2.then(() => {
-          if (auth2.isSignedIn.get()) {
-            onSignIn(auth2.currentUser.get());
-          } else {
-            document.getElementById('signupPopup').style.display = 'flex';
-          }
-        });
-      });
-    }
+<!-- Logout pop up -->
+<div id="logoutDialog" class="logout-dialog">
+  <div class="logout-dialog-content">
+    <h2 class="logout-heading">Confirm Logout</h2>
+    <p class="logout-message">Are you sure you want to log out?</p>
+    <div class="logout-actions">
+      <button class="logout-button cancel" onclick="closeLogoutDialog()">Cancel</button>
+      <button class="logout-button confirm" onclick="confirmLogout()">Confirm</button>
+    </div>
+  </div>
+</div>
 
-    function toggleSignIn() {
-      const box = document.getElementById('signinPage');
-      if (box.classList.contains('show')) {
-        closeSignIn();
-      } else {
-        box.style.display = 'block';
-        box.classList.add('show');
-        box.classList.remove('hide');
-      }
-    }
+<!-- Action dialog -->
+<div id="actionDialog" class="action-dialog">
+  <div class="action-dialog-content">
+    <h2 class="action-heading">Action</h2>
+    <p class="action-message"></p>
+    <div class="action-actions">
+      <button class="action-button ok" onclick="closeActionDialog()">OK</button>
+    </div>
+  </div>
+</div>
 
-    function closeSignIn() {
-      const box = document.getElementById('signinPage');
-      box.classList.remove('show');
-      box.classList.add('hide');
-      setTimeout(() => {
-        box.style.display = 'none';
-      }, 250);
-    }
+<!-- Feedback dialog -->
+<div id="feedbackDialog" class="feedback-dialog">
+  <div class="feedback-dialog-content">
+    <div class="feedback-logo">Contractor</div>
+    <h2 class="feedback-heading">Feedback</h2>
+    <form class="feedback-form">
+      <div class="feedback-field">
+        <label for="feedbackName">Name</label>
+        <input type="text" id="feedbackName" name="name" placeholder="Enter your name" required>
+      </div>
+      <div class="feedback-field">
+        <label for="feedbackGmail">Gmail</label>
+        <input type="email" id="feedbackGmail" name="gmail" placeholder="Enter your Gmail address" required>
+      </div>
+      <div class="feedback-field">
+        <label for="feedbackCountryCity">Country/City</label>
+        <input type="text" id="feedbackCountryCity" name="country-city" placeholder="Enter country and city" required>
+      </div>
+      <div class="feedback-field">
+        <label for="feedbackText">Feedback</label>
+        <textarea id="feedbackText" name="feedback" placeholder="Enter your feedback" rows="4" required></textarea>
+      </div>
+      <div class="feedback-actions">
+        <button type="button" class="feedback-button cancel" onclick="closeFeedbackDialog()">Cancel</button>
+        <button type="submit" class="feedback-button submit" onclick="submitFeedback()">Submit</button>
+      </div>
+    </form>
+  </div>
+</div>
 
-    function triggerGoogleSignIn() {
-      auth2.signIn().then(user => onSignIn(user));
-    }
+<!-- Help dialog -->
+<div id="helpDialog" class="help-dialog">
+  <div class="help-dialog-content">
+    <div class="help-logo">Contractor</div>
+    <h2 class="help-heading">Help</h2>
+    <div class="help-content">
+      <p>Welcome to the Help section. Here are some quick tips:</p>
+      <ul>
+        <li><strong>Profile:</strong> Update your details in the Profile section.</li>
+        <li><strong>Languages:</strong> Change your language under Language Options.</li>
+        <li><strong>Location:</strong> Set your preferred location for personalized results.</li>
+        <li><strong>Feedback:</strong> Share your thoughts via the Feedback form.</li>
+        <li><strong>Logout:</strong> Sign out securely from the Logout option.</li>
+      </ul>
+      <p>Contact support at support@contractor.com for further assistance.</p>
+    </div>
+    <div class="help-actions">
+      <button class="help-button ok" onclick="closeHelpDialog()">OK</button>
+    </div>
+  </div>
+</div>
 
-    function onSignIn(googleUser) {
-      const profile = googleUser.getBasicProfile();
-      console.log('ID:', profile.getId());
-      console.log('Name:', profile.getName());
-      console.log('Email:', profile.getEmail());
-      alert('Google Sign-In successful! (Demo)');
+<!-- Profile dialog -->
+<div id="profileDialog" class="profile-dialog">
+  <div class="profile-dialog-content">
+    <div class="profile-logo">Contractor</div>
+    <h2 class="profile-heading">Profile</h2>
+    <div class="profile-content">
+      <img src="icon/profile-placeholder.svg" alt="Profile Picture" class="profile-picture">
+      <div class="profile-field">
+        <label>Name</label>
+        <p>John Doe</p>
+      </div>
+      <div class="profile-field">
+        <label>Gmail</label>
+        <p>john.doe@gmail.com</p>
+      </div>
+      <div class="profile-field">
+        <label>Contact</label>
+        <p>+1 234 567 8900</p>
+      </div>
+    </div>
+    <div class="profile-actions">
+      <button class="profile-button cancel" onclick="closeProfileDialog()">Cancel</button>
+      <button class="profile-button edit" onclick="editProfile()">Edit</button>
+    </div>
+  </div>
+</div>
+
+<!-- Location dialog -->
+<div id="locationDialog" class="location-dialog">
+  <div class="location-dialog-content">
+    <div class="location-logo">Contractor</div>
+    <h2 class="location-heading">Location</h2>
+    <div class="location-content">
+      <div class="location-field">
+        <label for="locationInput">Find a Location</label>
+        <input type="text" id="locationInput" name="location" placeholder="Enter city or country" required>
+      </div>
+    </div>
+    <div class="location-actions">
+      <button class="location-button cancel" onclick="closeLocationDialog()">Cancel</button>
+      <button class="location-button change" onclick="changeLocation()">Change</button>
+    </div>
+  </div>
+</div>
+
+<!-- Hero section -->
+<section class="hero-section">
+  <h1>Sign Contract</h1>
+  <div class="search-bar">
+    <input type="text" placeholder="Search for contractors..." aria-label="Search contractors">
+    <button aria-label="Search">
+      <img src="icon/search-icon.svg" alt="Search">
+    </button>
+  </div>
+</section>
+</body>
+
+<script>
+// Profile and theme functions
+function toggleProfile() {
+  const box = document.getElementById('profilePage');
+  if (!box) {
+    console.error('Profile page element not found');
+    return;
+  }
+  if (box.classList.contains('show')) {
+    closeProfile();
+  } else {
+    box.style.display = 'block';
+    box.classList.add('show');
+    box.classList.remove('hide');
+  }
+}
+
+function closeProfile() {
+  const box = document.getElementById('profilePage');
+  if (!box) {
+    console.error('Profile page element not found');
+    return;
+  }
+  box.classList.remove('show');
+  box.classList.add('hide');
+  setTimeout(() => {
+    box.style.display = 'none';
+  }, 250);
+}
+
+function toggleLanguages() {
+  const languageOptions = document.getElementById('languageOptions');
+  if (!languageOptions) {
+    console.error('Language options element not found');
+    return;
+  }
+  languageOptions.classList.toggle('show');
+}
+
+function toggleTheme() {
+  document.body.classList.toggle('dark');
+  const isDark = document.body.classList.contains('dark');
+  localStorage.setItem('theme', isDark ? 'dark' : 'light');
+}
+
+// Notification functions
+function openNotificationPanel() {
+  const panel = document.getElementById('notificationPanel');
+  const profile = document.getElementById('profilePage');
+  if (!panel) {
+    console.error('Notification panel element not found');
+    return;
+  }
+  if (profile && profile.classList.contains('show')) {
+    closeProfile();
+  }
+  if (panel.classList.contains('show')) {
+    closeNotificationPanel();
+  } else {
+    panel.classList.remove('hide');
+    panel.style.display = 'flex';
+    requestAnimationFrame(() => {
+      panel.classList.add('show');
+    });
+  }
+}
+
+function closeNotificationPanel() {
+  const panel = document.getElementById('notificationPanel');
+  if (!panel) {
+    console.error('Notification panel element not found');
+    return;
+  }
+  panel.classList.remove('show');
+  panel.classList.add('hide');
+  setTimeout(() => {
+    panel.style.display = 'none';
+  }, 250);
+}
+
+function viewNotification(id) {
+  openActionDialog('View Notification', `Viewing notification ${id} (Demo)`);
+}
+
+function clearNotifications() {
+  openActionDialog('Clear Notifications', 'Clearing all notifications (Demo)');
+}
+
+// Logout dialog functions
+function logout() {
+  const dialog = document.getElementById('logoutDialog');
+  if (!dialog) {
+    console.error('Logout dialog element not found');
+    return;
+  }
+  dialog.classList.remove('hide');
+  dialog.style.display = 'flex';
+  requestAnimationFrame(() => {
+    dialog.classList.add('show');
+  });
+}
+
+function closeLogoutDialog() {
+  const dialog = document.getElementById('logoutDialog');
+  if (!dialog) {
+    console.error('Logout dialog element not found');
+    return;
+  }
+  dialog.classList.remove('show');
+  dialog.classList.add('hide');
+  setTimeout(() => {
+    dialog.style.display = 'none';
+  }, 250);
+}
+
+function confirmLogout() {
+  fetch('/api/logout', { method: 'POST' })
+    .then(() => window.location.href = 'dashboard.html')
+    .catch(err => {
+      console.error('Logout failed:', err);
+      alert('Logout failed. Please try again.');
+    });
+  closeLogoutDialog();
+}
+
+// Action dialog functions
+function openActionDialog(heading, message) {
+  const dialog = document.getElementById('actionDialog');
+  if (!dialog) {
+    console.error('Action dialog element not found');
+    return;
+  }
+  const profile = document.getElementById('profilePage');
+  const logoutDialog = document.getElementById('logoutDialog');
+  const feedbackDialog = document.getElementById('feedbackDialog');
+  const helpDialog = document.getElementById('helpDialog');
+  const profileDialog = document.getElementById('profileDialog');
+  const locationDialog = document.getElementById('locationDialog');
+  
+  // Close other modals
+  if (profile && profile.classList.contains('show')) {
+    closeProfile();
+  }
+  if (logoutDialog && logoutDialog.classList.contains('show')) {
+    closeLogoutDialog();
+  }
+  if (feedbackDialog && feedbackDialog.classList.contains('show')) {
+    closeFeedbackDialog();
+  }
+  if (helpDialog && helpDialog.classList.contains('show')) {
+    closeHelpDialog();
+  }
+  if (profileDialog && profileDialog.classList.contains('show')) {
+    closeProfileDialog();
+  }
+  if (locationDialog && locationDialog.classList.contains('show')) {
+    closeLocationDialog();
+  }
+  
+  // Set dialog content
+  const headingElement = document.querySelector('.action-heading');
+  const messageElement = document.querySelector('.action-message');
+  if (headingElement && messageElement) {
+    headingElement.textContent = heading;
+    messageElement.textContent = message;
+  } else {
+    console.error('Action dialog heading or message element not found');
+  }
+  
+  // Show dialog
+  dialog.classList.remove('hide');
+  dialog.style.display = 'flex';
+  requestAnimationFrame(() => {
+    dialog.classList.add('show');
+  });
+}
+
+function closeActionDialog() {
+  const dialog = document.getElementById('actionDialog');
+  if (!dialog) {
+    console.error('Action dialog element not found');
+    return;
+  }
+  dialog.classList.remove('show');
+  dialog.classList.add('hide');
+  setTimeout(() => {
+    dialog.style.display = 'none';
+  }, 250);
+}
+
+// Feedback dialog functions
+function sendFeedback() {
+  const dialog = document.getElementById('feedbackDialog');
+  if (!dialog) {
+    console.error('Feedback dialog element not found');
+    return;
+  }
+  const profile = document.getElementById('profilePage');
+  const logoutDialog = document.getElementById('logoutDialog');
+  const actionDialog = document.getElementById('actionDialog');
+  const helpDialog = document.getElementById('helpDialog');
+  const profileDialog = document.getElementById('profileDialog');
+  const locationDialog = document.getElementById('locationDialog');
+  
+  // Close other modals
+  if (profile && profile.classList.contains('show')) {
+    closeProfile();
+  }
+  if (logoutDialog && logoutDialog.classList.contains('show')) {
+    closeLogoutDialog();
+  }
+  if (actionDialog && actionDialog.classList.contains('show')) {
+    closeActionDialog();
+  }
+  if (helpDialog && helpDialog.classList.contains('show')) {
+    closeHelpDialog();
+  }
+  if (profileDialog && profileDialog.classList.contains('show')) {
+    closeProfileDialog();
+  }
+  if (locationDialog && locationDialog.classList.contains('show')) {
+    closeLocationDialog();
+  }
+  
+  // Reset form
+  const form = document.querySelector('.feedback-form');
+  if (form) {
+    form.reset();
+  } else {
+    console.error('Feedback form not found');
+  }
+  
+  // Show dialog
+  dialog.classList.remove('hide');
+  dialog.style.display = 'flex';
+  requestAnimationFrame(() => {
+    dialog.classList.add('show');
+  });
+}
+
+function closeFeedbackDialog() {
+  const dialog = document.getElementById('feedbackDialog');
+  if (!dialog) {
+    console.error('Feedback dialog element not found');
+    return;
+  }
+  dialog.classList.remove('show');
+  dialog.classList.add('hide');
+  setTimeout(() => {
+    dialog.style.display = 'none';
+  }, 250);
+}
+
+function submitFeedback() {
+  const name = document.getElementById('feedbackName')?.value;
+  const gmail = document.getElementById('feedbackGmail')?.value;
+  const countryCity = document.getElementById('feedbackCountryCity')?.value;
+  const feedback = document.getElementById('feedbackText')?.value;
+  
+  if (name && gmail && countryCity && feedback) {
+    console.log('Feedback submitted:', { name, gmail, countryCity, feedback });
+    openActionDialog('Feedback Submitted', 'Your feedback has been submitted (Demo)');
+    closeFeedbackDialog();
+  } else {
+    openActionDialog('Error', 'Please fill out all fields');
+  }
+}
+
+// Help dialog functions
+function openHelp() {
+  const dialog = document.getElementById('helpDialog');
+  if (!dialog) {
+    console.error('Help dialog element not found. Ensure #helpDialog exists in HTML');
+    return;
+  }
+  console.log('Attempting to open help dialog');
+  const profile = document.getElementById('profilePage');
+  const logoutDialog = document.getElementById('logoutDialog');
+  const actionDialog = document.getElementById('actionDialog');
+  const feedbackDialog = document.getElementById('feedbackDialog');
+  const profileDialog = document.getElementById('profileDialog');
+  const locationDialog = document.getElementById('locationDialog');
+  
+  // Close other modals
+  if (profile && profile.classList.contains('show')) {
+    closeProfile();
+  }
+  if (logoutDialog && logoutDialog.classList.contains('show')) {
+    closeLogoutDialog();
+  }
+  if (actionDialog && actionDialog.classList.contains('show')) {
+    closeActionDialog();
+  }
+  if (feedbackDialog && feedbackDialog.classList.contains('show')) {
+    closeFeedbackDialog();
+  }
+  if (profileDialog && profileDialog.classList.contains('show')) {
+    closeProfileDialog();
+  }
+  if (locationDialog && locationDialog.classList.contains('show')) {
+    closeLocationDialog();
+  }
+  
+  // Show dialog
+  dialog.classList.remove('hide');
+  dialog.style.display = 'flex';
+  requestAnimationFrame(() => {
+    dialog.classList.add('show');
+    console.log('Help dialog opened');
+  });
+}
+
+function closeHelpDialog() {
+  const dialog = document.getElementById('helpDialog');
+  if (!dialog) {
+    console.error('Help dialog element not found');
+    return;
+  }
+  dialog.classList.remove('show');
+  dialog.classList.add('hide');
+  setTimeout(() => {
+    dialog.style.display = 'none';
+  }, 250);
+}
+
+// Profile dialog functions
+function openProfile() {
+  const dialog = document.getElementById('profileDialog');
+  if (!dialog) {
+    console.error('Profile dialog element not found. Ensure #profileDialog exists in HTML');
+    return;
+  }
+  console.log('Attempting to open profile dialog');
+  const profile = document.getElementById('profilePage');
+  const logoutDialog = document.getElementById('logoutDialog');
+  const actionDialog = document.getElementById('actionDialog');
+  const feedbackDialog = document.getElementById('feedbackDialog');
+  const helpDialog = document.getElementById('helpDialog');
+  const locationDialog = document.getElementById('locationDialog');
+  
+  // Close other modals
+  if (profile && profile.classList.contains('show')) {
+    closeProfile();
+  }
+  if (logoutDialog && logoutDialog.classList.contains('show')) {
+    closeLogoutDialog();
+  }
+  if (actionDialog && actionDialog.classList.contains('show')) {
+    closeActionDialog();
+  }
+  if (feedbackDialog && feedbackDialog.classList.contains('show')) {
+    closeFeedbackDialog();
+  }
+  if (helpDialog && helpDialog.classList.contains('show')) {
+    closeHelpDialog();
+  }
+  if (locationDialog && locationDialog.classList.contains('show')) {
+    closeLocationDialog();
+  }
+  
+  // Show dialog
+  dialog.classList.remove('hide');
+  dialog.style.display = 'flex';
+  requestAnimationFrame(() => {
+    dialog.classList.add('show');
+    console.log('Profile dialog opened');
+  });
+}
+
+function closeProfileDialog() {
+  const dialog = document.getElementById('profileDialog');
+  if (!dialog) {
+    console.error('Profile dialog element not found');
+    return;
+  }
+  dialog.classList.remove('show');
+  dialog.classList.add('hide');
+  setTimeout(() => {
+    dialog.style.display = 'none';
+  }, 250);
+}
+
+function editProfile() {
+  openActionDialog('Edit Profile', 'Profile editing initiated (Demo)');
+  closeProfileDialog();
+}
+
+// Location dialog functions
+function openLocation() {
+  const dialog = document.getElementById('locationDialog');
+  if (!dialog) {
+    console.error('Location dialog element not found. Ensure #locationDialog exists in HTML');
+    return;
+  }
+  console.log('Attempting to open location dialog');
+  const profile = document.getElementById('profilePage');
+  const logoutDialog = document.getElementById('logoutDialog');
+  const actionDialog = document.getElementById('actionDialog');
+  const feedbackDialog = document.getElementById('feedbackDialog');
+  const helpDialog = document.getElementById('helpDialog');
+  const profileDialog = document.getElementById('profileDialog');
+  
+  // Close other modals
+  if (profile && profile.classList.contains('show')) {
+    closeProfile();
+  }
+  if (logoutDialog && logoutDialog.classList.contains('show')) {
+    closeLogoutDialog();
+  }
+  if (actionDialog && actionDialog.classList.contains('show')) {
+    closeActionDialog();
+  }
+  if (feedbackDialog && feedbackDialog.classList.contains('show')) {
+    closeFeedbackDialog();
+  }
+  if (helpDialog && helpDialog.classList.contains('show')) {
+    closeHelpDialog();
+  }
+  if (profileDialog && profileDialog.classList.contains('show')) {
+    closeProfileDialog();
+  }
+  
+  // Reset input
+  const input = document.getElementById('locationInput');
+  if (input) {
+    input.value = '';
+  }
+  
+  // Show dialog
+  dialog.classList.remove('hide');
+  dialog.style.display = 'flex';
+  requestAnimationFrame(() => {
+    dialog.classList.add('show');
+    console.log('Location dialog opened');
+  });
+}
+
+function closeLocationDialog() {
+  const dialog = document.getElementById('locationDialog');
+  if (!dialog) {
+    console.error('Location dialog element not found');
+    return;
+  }
+  dialog.classList.remove('show');
+  dialog.classList.add('hide');
+  setTimeout(() => {
+    dialog.style.display = 'none';
+  }, 250);
+}
+
+function changeLocation() {
+  const location = document.getElementById('locationInput')?.value;
+  if (location) {
+    openActionDialog('Location Changed', `Location set to ${location} (Demo)`);
+    closeLocationDialog();
+  } else {
+    openActionDialog('Error', 'Please enter a location');
+  }
+}
+
+// Placeholder function
+function selectLanguage(language) {
+  openActionDialog('Language Selection', `Selected language: ${language} (Demo)`);
+}
+
+// DOMContentLoaded listener
+document.addEventListener('DOMContentLoaded', () => {
+  const savedTheme = localStorage.getItem('theme');
+  if (savedTheme === 'dark') {
+    document.body.classList.add('dark');
+    const themeToggle = document.getElementById('themeToggle');
+    if (themeToggle) {
+      themeToggle.checked = true;
     }
-  </script>
+  }
+  const profilePopup = document.getElementById('profilePopup');
+  if (profilePopup) {
+    profilePopup.style.display = 'flex';
+  } else {
+    console.error('Profile popup element not found');
+  }
+});
+
+// Consolidated global click listener
+document.addEventListener('click', function (e) {
+  const panel = document.getElementById('notificationPanel');
+  const toggle = document.querySelector('.notification-toggle');
+  const profile = document.getElementById('profilePage');
+  const profilePopup = document.getElementById('profilePopup');
+  const logoutDialog = document.getElementById('logoutDialog');
+  const logoutContent = document.querySelector('.logout-dialog-content');
+  const actionDialog = document.getElementById('actionDialog');
+  const actionContent = document.querySelector('.action-dialog-content');
+  const feedbackDialog = document.getElementById('feedbackDialog');
+  const feedbackContent = document.querySelector('.feedback-dialog-content');
+  const helpDialog = document.getElementById('helpDialog');
+  const helpContent = document.querySelector('.help-dialog-content');
+  const profileDialog = document.getElementById('profileDialog');
+  const profileContent = document.querySelector('.profile-dialog-content');
+  const locationDialog = document.getElementById('locationDialog');
+  const locationContent = document.querySelector('.location-dialog-content');
+
+  if (panel && toggle && !panel.contains(e.target) && !toggle.contains(e.target) && panel.classList.contains('show')) {
+    closeNotificationPanel();
+  }
+
+  if (profile && profilePopup && !profile.contains(e.target) && !profilePopup.contains(e.target) && profile.classList.contains('show')) {
+    closeProfile();
+  }
+
+  if (logoutDialog && logoutDialog.classList.contains('show') && logoutContent && !logoutContent.contains(e.target)) {
+    closeLogoutDialog();
+  }
+
+  if (actionDialog && actionDialog.classList.contains('show') && actionContent && !actionContent.contains(e.target)) {
+    closeActionDialog();
+  }
+
+  if (feedbackDialog && feedbackDialog.classList.contains('show') && feedbackContent && !feedbackContent.contains(e.target)) {
+    closeFeedbackDialog();
+  }
+
+  if (helpDialog && helpDialog.classList.contains('show') && helpContent && !helpContent.contains(e.target)) {
+    closeHelpDialog();
+  }
+
+  if (profileDialog && profileDialog.classList.contains('show') && profileContent && !profileContent.contains(e.target)) {
+    closeProfileDialog();
+  }
+
+  if (locationDialog && locationDialog.classList.contains('show') && locationContent && !locationContent.contains(e.target)) {
+    closeLocationDialog();
+  }
+});
+</script>
 </body>
 </html>
