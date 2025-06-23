@@ -142,7 +142,7 @@ body.dark .jsv-container .jsv-icon-wrapper img {
   display: none;
   flex-direction: column;
   gap: clamp(0.3rem, 1vw, 0.55rem);
-  z-index: 701;
+  z-index: 9999;
   transition: transform 0.3s ease-out, opacity 0.3s ease-out, visibility 0.3s ease-out;
   scrollbar-width: thick;
   scrollbar-color: var(--text-tertiary, #9ca3af) var(--background-secondary, #f9fafb);
